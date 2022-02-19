@@ -7,6 +7,7 @@ use sea_orm::QueryOrder;
 use sea_orm::Set;
 use sea_orm::{ColumnTrait, PaginatorTrait, QueryFilter, QuerySelect, RelationTrait};
 use sea_orm::{Condition, EntityTrait, JoinType};
+use tracing::debug;
 
 impl UserEntityTrait for Entity {}
 
@@ -53,6 +54,7 @@ pub trait UserEntityTrait {
         page_num: i32,
         page_size: i32,
     ) -> Result<PageResult<Vec<Model>>, anyhow::Error> {
+        debug!("page_num={}, page_size={}", page_num, page_size);
         let mut page_num = page_num;
         let mut page_size = page_size;
         if page_num < 1 {
@@ -76,7 +78,7 @@ pub trait UserEntityTrait {
         })
     }
 
-    async fn list_by_age_and_egin(age: i32, egin: String) -> Result<Vec<UserVO>, anyhow::Error> {
+    async fn list_by_age_and_egin(age: i32, egin: String) -> Result<Vec<UserDTO>, anyhow::Error> {
         let arr = Entity::find()
             .select_only()
             .column(Column::Id)
@@ -93,7 +95,7 @@ pub trait UserEntityTrait {
             .order_by_desc(Column::Id)
             .limit(10)
             .offset(1)
-            .into_model::<UserVO>()
+            .into_model::<UserDTO>()
             .all(&db_utils::get_connection().await?)
             .await?;
         Ok(arr)

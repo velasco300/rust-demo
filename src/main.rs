@@ -24,6 +24,7 @@ async fn main() {
                 .delete(user_controller::delete)
                 .put(user_controller::update),
         )
+        .route("/users/search", get(user_controller::pg_by_age_and_egin))
         .fallback(defalut_route.into_service());
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     Server::bind(&addr)

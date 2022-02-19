@@ -1,23 +1,25 @@
+GET http://localhost:3000/users/search?age=10&egin=lbjn HTTP/1.1
+###
 GET http://localhost:3000/users/1 HTTP/1.1
 ###
-GET http://localhost:3000/users?page_num=2&page_size=12 HTTP/1.1
+GET http://localhost:3000/users?page_num=1&page_size=3 HTTP/1.1
 ###
 POST http://localhost:3000/users HTTP/1.1
 content-type: application/json
 
 {
-    "user_name": "张三",
+    "user_name": "关羽",
     "age": 18
 }
 ###
-DELETE http://localhost:3000/users/4 HTTP/1.1
+DELETE http://localhost:3000/users/5 HTTP/1.1
 ###
 PUT http://localhost:3000/users/7 HTTP/1.1
 content-type: application/json
 
 {
-    "id": 7,
-    "user_name": "张三",
+    "id": 8,
+    "user_name": "赵云",
     "age": 18
 }
 

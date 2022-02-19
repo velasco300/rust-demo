@@ -6,6 +6,15 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 
 #[derive(Debug, Default, FromQueryResult, Deserialize, Serialize)]
+pub struct UserDTO {
+    pub id: i32,
+    pub age: i32,
+    pub user_name: String,
+    pub car_id: i32,
+    pub egin: String,
+}
+
+#[derive(Debug, Default, FromQueryResult, Deserialize, Serialize)]
 pub struct UserVO {
     pub id: Option<i32>,
     pub age: Option<i32>,

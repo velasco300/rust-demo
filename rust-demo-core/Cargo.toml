@@ -13,9 +13,5 @@ serde = { version = "1", features = ["derive"] }
 anyhow = "1.0.53"
 async-trait = "0.1.52"
 axum = "0.4"
-
-[dependencies.serde_json]
-version = "1.0"
-features = ["raw_value"]
-
-
+tracing = "0.1"
+tracing-subscriber = { version="0.3", features = ["env-filter"] }
