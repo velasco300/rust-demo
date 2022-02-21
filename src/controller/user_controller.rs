@@ -7,12 +7,15 @@ use rust_demo_core::{
     orm::user,
     service::user_service::UserEntityTrait,
 };
-use tracing::log::debug;
+use tracing::{debug, error, info, warn};
 
 pub async fn index(
     Query(vo): Query<user::UserVO>,
 ) -> Json<RspResult<Option<PageResult<Vec<user::Model>>>>> {
-    debug!("{:?}", vo);
+    debug!("age = {:?}", vo.age);
+    info!("user_name = {:?}", vo.user_name);
+    warn!("page_num = {:?}", vo.page_num);
+    error!("page_size = {:?}", vo.page_size);
     let page_num = vo.page_num.unwrap_or(1);
     let page_size = vo.page_size.unwrap_or(10);
     Json(make_result(

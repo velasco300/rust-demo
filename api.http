@@ -2,7 +2,7 @@ GET http://localhost:3000/users/search?age=10&egin=lbjn HTTP/1.1
 ###
 GET http://localhost:3000/users/1 HTTP/1.1
 ###
-GET http://localhost:3000/users?page_num=1&page_size=3 HTTP/1.1
+GET http://localhost:3000/users?age=18&page_num=1&page_size=3 HTTP/1.1
 ###
 POST http://localhost:3000/users HTTP/1.1
 content-type: application/json

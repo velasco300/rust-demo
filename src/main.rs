@@ -1,17 +1,30 @@
 pub(crate) mod controller;
+pub mod middleware;
 
 use crate::controller::user_controller;
-use axum::{handler::Handler, response::IntoResponse, routing::get, Json, Router, Server};
+use axum::{
+    handler::Handler, http::Request, response::IntoResponse, routing::get, Json, Router, Server,
+};
 use rust_demo_core::common::RspResult;
 use std::net::SocketAddr;
 use tracing::info;
+use tracing_appender::rolling;
+use tracing_subscriber::fmt::writer::MakeWriterExt;
 
 #[tokio::main]
 async fn main() {
     if std::env::var_os("RUST_LOG").is_none() {
         std::env::set_var("RUST_LOG", "rust_demo=debug,rust_demo_core=debug")
     }
-    tracing_subscriber::fmt::init();
+    let (d_non_blocking, _guard) =
+        tracing_appender::non_blocking(rolling::minutely("./logs", "debug"));
+    let (e_non_blocking, _guard) =
+        tracing_appender::non_blocking(rolling::daily("./logs", "error"));
+    tracing_subscriber::fmt()
+        .with_writer(d_non_blocking.and(e_non_blocking))
+        .with_ansi(false)
+        .with_max_level(tracing::Level::TRACE)
+        .init();
     info!("main start");
     let app = Router::new()
         .route(
@@ -33,6 +46,11 @@ async fn main() {
         .unwrap();
 }
 
-async fn defalut_route() -> impl IntoResponse {
-    Json(RspResult::fail("没有找到匹配的URL".to_owned(), ""))
+async fn defalut_route<B>(req: Request<B>) -> impl IntoResponse {
+    let method = req.method().as_str();
+    let url = req.uri().path();
+    Json(RspResult::fail(
+        "没有找到匹配的URL".to_owned(),
+        format!("{} : {}", method, url),
+    ))
 }
