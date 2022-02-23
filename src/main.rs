@@ -3,27 +3,22 @@ pub mod middleware;
 
 use crate::controller::user_controller;
 use axum::{
-    handler::Handler, http::Request, response::IntoResponse, routing::get, Json, Router, Server,
+    handler::Handler, http::Request, middleware::from_fn, response::IntoResponse, routing::get,
+    Json, Router, Server,
 };
 use rust_demo_core::common::RspResult;
 use std::net::SocketAddr;
 use tracing::info;
 use tracing_appender::rolling;
-use tracing_subscriber::fmt::writer::MakeWriterExt;
 
 #[tokio::main]
 async fn main() {
-    if std::env::var_os("RUST_LOG").is_none() {
-        std::env::set_var("RUST_LOG", "rust_demo=debug,rust_demo_core=debug")
-    }
-    let (d_non_blocking, _guard) =
-        tracing_appender::non_blocking(rolling::minutely("./logs", "debug"));
-    let (e_non_blocking, _guard) =
-        tracing_appender::non_blocking(rolling::daily("./logs", "error"));
+    let (non_blocking, _guard) =
+        tracing_appender::non_blocking(rolling::daily("./logs", "app.log"));
     tracing_subscriber::fmt()
-        .with_writer(d_non_blocking.and(e_non_blocking))
         .with_ansi(false)
-        .with_max_level(tracing::Level::TRACE)
+        .with_line_number(true)
+        .with_writer(non_blocking)
         .init();
     info!("main start");
     let app = Router::new()
@@ -38,6 +33,7 @@ async fn main() {
                 .put(user_controller::update),
         )
         .route("/users/search", get(user_controller::pg_by_age_and_egin))
+        .layer(from_fn(middleware::handle_global_exception))
         .fallback(defalut_route.into_service());
     let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
     Server::bind(&addr)
