@@ -1,3 +1,5 @@
+pub mod etc;
+
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::fmt;

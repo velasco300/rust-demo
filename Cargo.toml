@@ -16,3 +16,5 @@ tracing-appender = "0.2"
 serde = { version = "1", features = ["derive"] }
 anyhow = "1.0.53"
 time = "0.3.7"
+time-macros = "0.2.3"
+toml_edit =  { version = "0.13.4", features = ["serde", "easy"] }
