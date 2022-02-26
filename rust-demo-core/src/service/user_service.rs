@@ -14,12 +14,12 @@ impl UserEntityTrait for Entity {}
 #[async_trait]
 pub trait UserEntityTrait {
     async fn save_user(user: ActiveModel) -> Result<Model, anyhow::Error> {
-        Ok(user.insert(&db_utils::get_connection().await?).await?)
+        Ok(user.insert(&db_utils::create_connection().await?).await?)
     }
 
     async fn save_many_user(users: Vec<ActiveModel>) -> Result<(), anyhow::Error> {
         Entity::insert_many(users)
-            .exec(&db_utils::get_connection().await?)
+            .exec(&db_utils::create_connection().await?)
             .await?;
         Ok(())
     }
@@ -29,13 +29,13 @@ pub trait UserEntityTrait {
             id: Set(id),
             ..Default::default()
         }
-        .delete(&db_utils::get_connection().await?)
+        .delete(&db_utils::create_connection().await?)
         .await?;
         Ok(())
     }
 
     async fn update_user(user: ActiveModel) -> Result<Model, anyhow::Error> {
-        Ok(user.update(&db_utils::get_connection().await?).await?)
+        Ok(user.update(&db_utils::create_connection().await?).await?)
     }
 
     async fn query_by_id(id: i32) -> Result<Option<Model>, anyhow::Error> {
@@ -46,7 +46,7 @@ pub trait UserEntityTrait {
             .ok_or(anyhow!("没有查询到数据"))
         */
         Ok(Entity::find_by_id(id)
-            .one(&db_utils::get_connection().await?)
+            .one(&db_utils::create_connection().await?)
             .await?)
     }
 
@@ -63,7 +63,7 @@ pub trait UserEntityTrait {
         if page_size < 1 {
             page_size = 1;
         }
-        let conn = db_utils::get_connection().await?;
+        let conn = db_utils::create_connection().await?;
         let paginator = Entity::find()
             .order_by_desc(Column::Id)
             .paginate(&conn, page_size.try_into()?);
@@ -96,7 +96,7 @@ pub trait UserEntityTrait {
             .limit(10)
             .offset(1)
             .into_model::<UserDTO>()
-            .all(&db_utils::get_connection().await?)
+            .all(&db_utils::create_connection().await?)
             .await?;
         Ok(arr)
     }
