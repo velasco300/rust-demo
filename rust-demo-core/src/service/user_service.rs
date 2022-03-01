@@ -1,6 +1,6 @@
 use crate::common::PageResult;
-use crate::orm::car;
-use crate::{orm::user::*, util::db_utils};
+use crate::orm::user::*;
+use crate::orm::{car, APP_CONN};
 use async_trait::async_trait;
 use sea_orm::ActiveModelTrait;
 use sea_orm::QueryOrder;
@@ -14,28 +14,30 @@ impl UserEntityTrait for Entity {}
 #[async_trait]
 pub trait UserEntityTrait {
     async fn save_user(user: ActiveModel) -> Result<Model, anyhow::Error> {
-        Ok(user.insert(&db_utils::create_connection().await?).await?)
+        let conn = unsafe { APP_CONN.unwrap() };
+        Ok(user.insert(conn).await?)
     }
 
     async fn save_many_user(users: Vec<ActiveModel>) -> Result<(), anyhow::Error> {
-        Entity::insert_many(users)
-            .exec(&db_utils::create_connection().await?)
-            .await?;
+        let conn = unsafe { APP_CONN.unwrap() };
+        Entity::insert_many(users).exec(conn).await?;
         Ok(())
     }
 
     async fn delete_user(id: i32) -> Result<(), anyhow::Error> {
+        let conn = unsafe { APP_CONN.unwrap() };
         ActiveModel {
             id: Set(id),
             ..Default::default()
         }
-        .delete(&db_utils::create_connection().await?)
+        .delete(conn)
         .await?;
         Ok(())
     }
 
     async fn update_user(user: ActiveModel) -> Result<Model, anyhow::Error> {
-        Ok(user.update(&db_utils::create_connection().await?).await?)
+        let conn = unsafe { APP_CONN.unwrap() };
+        Ok(user.update(conn).await?)
     }
 
     async fn query_by_id(id: i32) -> Result<Option<Model>, anyhow::Error> {
@@ -45,9 +47,8 @@ pub trait UserEntityTrait {
             .await?
             .ok_or(anyhow!("没有查询到数据"))
         */
-        Ok(Entity::find_by_id(id)
-            .one(&db_utils::create_connection().await?)
-            .await?)
+        let conn = unsafe { APP_CONN.unwrap() };
+        Ok(Entity::find_by_id(id).one(conn).await?)
     }
 
     async fn page_user(
@@ -63,10 +64,10 @@ pub trait UserEntityTrait {
         if page_size < 1 {
             page_size = 1;
         }
-        let conn = db_utils::create_connection().await?;
+        let conn = unsafe { APP_CONN.unwrap() };
         let paginator = Entity::find()
             .order_by_desc(Column::Id)
-            .paginate(&conn, page_size.try_into()?);
+            .paginate(conn, page_size.try_into()?);
         let pages = paginator.num_pages().await?;
         let arr = paginator.fetch_page((page_num - 1).try_into()?).await?;
 
@@ -79,6 +80,7 @@ pub trait UserEntityTrait {
     }
 
     async fn list_by_age_and_egin(age: i32, egin: String) -> Result<Vec<UserDTO>, anyhow::Error> {
+        let conn = unsafe { APP_CONN.unwrap() };
         let arr = Entity::find()
             .select_only()
             .column(Column::Id)
@@ -96,7 +98,7 @@ pub trait UserEntityTrait {
             .limit(10)
             .offset(1)
             .into_model::<UserDTO>()
-            .all(&db_utils::create_connection().await?)
+            .all(conn)
             .await?;
         Ok(arr)
     }

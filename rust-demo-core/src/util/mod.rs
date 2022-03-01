@@ -1,11 +1,15 @@
 pub mod db_utils;
 
+use crate::common::etc::AppConfig;
 use core::fmt;
+use lazy_static::lazy_static;
 use std::fs;
 use time::{format_description, OffsetDateTime, UtcOffset};
 use tracing_subscriber::fmt::{format::Writer, time::FormatTime};
 
-use crate::common::etc::AppConfig;
+lazy_static! {
+    pub static ref APP_CFG: AppConfig = read_config();
+}
 
 #[derive(Debug)]
 pub struct LogTimer;

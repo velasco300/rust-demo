@@ -3,6 +3,4 @@ ip = "127.0.0.1"
 port = 3000
 
 [database]
-url = "mysql:loclal:3306"
-username = "tom"
-password = ""
+url = "mysql://root:@localhost/zzz"

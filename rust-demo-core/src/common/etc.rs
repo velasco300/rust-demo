@@ -15,6 +15,4 @@ pub struct Server {
 #[derive(Debug, Deserialize)]
 pub struct Database {
     pub url: String,
-    pub username: String,
-    pub password: String,
 }

@@ -8,7 +8,8 @@ use axum::{
 };
 use rust_demo_core::{
     common::RspResult,
-    util::{read_config, LogTimer},
+    orm,
+    util::{LogTimer, APP_CFG},
 };
 use std::net::SocketAddr;
 use tracing::info;
@@ -32,6 +33,7 @@ async fn main() {
         .with_writer(non_blocking)
         .init();
     info!("app server start");
+    orm::init_app_conn().await;
     run_server().await;
 }
 
@@ -60,13 +62,12 @@ async fn run_server() {
         .layer(from_fn(middleware::handle_global_exception))
         .fallback(defalut_route.into_service());
 
-    let cfg = read_config();
-    let arr: Vec<&str> = cfg.server.ip.split(".").collect();
+    let arr: Vec<&str> = APP_CFG.server.ip.split(".").collect();
     let a = arr[0].parse::<u8>().unwrap();
     let b = arr[1].parse::<u8>().unwrap();
     let c = arr[2].parse::<u8>().unwrap();
     let d = arr[3].parse::<u8>().unwrap();
-    let port: u16 = cfg.server.port.try_into().unwrap();
+    let port: u16 = APP_CFG.server.port.try_into().unwrap();
     let addr = SocketAddr::from(([a, b, c, d], port));
 
     Server::bind(&addr)
