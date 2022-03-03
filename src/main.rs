@@ -3,9 +3,14 @@ pub mod middleware;
 
 use crate::controller::user_controller;
 use axum::{
-    handler::Handler, http::Request, middleware::from_fn, response::IntoResponse, routing::get,
+    handler::Handler,
+    http::Request,
+    middleware::from_fn,
+    response::IntoResponse,
+    routing::{get, post},
     Json, Router, Server,
 };
+use controller::car_controller;
 use rust_demo_core::{
     common::RspResult,
     orm,
@@ -59,6 +64,14 @@ async fn run_server() {
                 .put(user_controller::update),
         )
         .route("/users/search", get(user_controller::pg_by_age_and_egin))
+        .route("/cars", post(car_controller::add))
+        .route(
+            "/cars/:id",
+            get(car_controller::show)
+                .delete(car_controller::delete)
+                .put(car_controller::update),
+        )
+        .route("/cars/search", get(car_controller::list_by_egin))
         .layer(from_fn(middleware::handle_global_exception))
         .fallback(defalut_route.into_service());
 
