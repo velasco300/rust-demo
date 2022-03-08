@@ -1,10 +1,14 @@
 use crate::controller::make_result;
-use axum::extract::Path;
-use axum::response::IntoResponse;
-use axum::{extract::Query, Json};
-use rust_demo_core::common::RspResult;
-use rust_demo_core::orm::car;
-use rust_demo_core::service::{car_service::CarEntityTrait, BaseEntityTrait};
+use axum::{
+    extract::{Path, Query},
+    response::IntoResponse,
+    Json,
+};
+use rust_demo_core::{
+    common::RspResult,
+    orm::car,
+    service::{car_service::CarEntityTrait, BaseEntityTrait},
+};
 
 pub async fn add(Json(vo): Json<car::CarVO>) -> impl IntoResponse {
     Json(make_result(

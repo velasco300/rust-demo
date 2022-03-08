@@ -1,7 +1,4 @@
-use sea_orm::entity::prelude::*;
-use sea_orm::FromQueryResult;
-use sea_orm::NotSet;
-use sea_orm::Set;
+use sea_orm::{entity::prelude::*, FromQueryResult, NotSet, Set};
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 

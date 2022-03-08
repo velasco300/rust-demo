@@ -1,5 +1,7 @@
-use super::BaseEntityTrait;
-use crate::orm::{car, APP_CONN};
+use crate::{
+    orm::{car, APP_CONN},
+    service::BaseEntityTrait,
+};
 use async_trait::async_trait;
 use sea_orm::{ColumnTrait, Condition, EntityTrait, QueryFilter, QueryOrder};
 use tracing::debug;

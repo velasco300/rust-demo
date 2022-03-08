@@ -1,7 +1,9 @@
 use crate::controller::make_result;
-use axum::extract::Path;
-use axum::response::IntoResponse;
-use axum::{extract::Query, Json};
+use axum::{
+    extract::{Path, Query},
+    response::IntoResponse,
+    Json,
+};
 use rust_demo_core::{
     common::{PageResult, RspResult},
     orm::user,

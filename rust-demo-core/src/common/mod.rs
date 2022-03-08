@@ -1,8 +1,7 @@
 pub mod etc;
 
 use serde::{Deserialize, Serialize};
-use std::error::Error;
-use std::fmt;
+use std::{error::Error, fmt};
 
 #[derive(Debug)]
 pub struct AppErr {

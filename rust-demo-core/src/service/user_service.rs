@@ -1,32 +1,32 @@
-use crate::common::PageResult;
-use crate::orm::user::*;
-use crate::orm::{car, APP_CONN};
+use crate::{
+    common::PageResult,
+    orm::{car, user, APP_CONN},
+};
 use async_trait::async_trait;
-use sea_orm::ActiveModelTrait;
-use sea_orm::QueryOrder;
-use sea_orm::Set;
-use sea_orm::{ColumnTrait, PaginatorTrait, QueryFilter, QuerySelect, RelationTrait};
-use sea_orm::{Condition, EntityTrait, JoinType};
+use sea_orm::{
+    ActiveModelTrait, ColumnTrait, Condition, EntityTrait, JoinType, PaginatorTrait, QueryFilter,
+    QueryOrder, QuerySelect, RelationTrait, Set,
+};
 use tracing::debug;
 
-impl UserEntityTrait for Entity {}
+impl UserEntityTrait for user::Entity {}
 
 #[async_trait]
 pub trait UserEntityTrait {
-    async fn save_user(user: ActiveModel) -> Result<Model, anyhow::Error> {
+    async fn save_user(user: user::ActiveModel) -> Result<user::Model, anyhow::Error> {
         let conn = unsafe { APP_CONN.unwrap() };
         Ok(user.insert(conn).await?)
     }
 
-    async fn save_many_user(users: Vec<ActiveModel>) -> Result<(), anyhow::Error> {
+    async fn save_many_user(users: Vec<user::ActiveModel>) -> Result<(), anyhow::Error> {
         let conn = unsafe { APP_CONN.unwrap() };
-        Entity::insert_many(users).exec(conn).await?;
+        user::Entity::insert_many(users).exec(conn).await?;
         Ok(())
     }
 
     async fn delete_user(id: i32) -> Result<(), anyhow::Error> {
         let conn = unsafe { APP_CONN.unwrap() };
-        ActiveModel {
+        user::ActiveModel {
             id: Set(id),
             ..Default::default()
         }
@@ -35,12 +35,12 @@ pub trait UserEntityTrait {
         Ok(())
     }
 
-    async fn update_user(user: ActiveModel) -> Result<Model, anyhow::Error> {
+    async fn update_user(user: user::ActiveModel) -> Result<user::Model, anyhow::Error> {
         let conn = unsafe { APP_CONN.unwrap() };
         Ok(user.update(conn).await?)
     }
 
-    async fn query_by_id(id: i32) -> Result<Option<Model>, anyhow::Error> {
+    async fn query_by_id(id: i32) -> Result<Option<user::Model>, anyhow::Error> {
         /* example option to result
         Entity::find_by_id(id)
             .one(&db_utils::get_connection().await?)
@@ -48,13 +48,13 @@ pub trait UserEntityTrait {
             .ok_or(anyhow!("没有查询到数据"))
         */
         let conn = unsafe { APP_CONN.unwrap() };
-        Ok(Entity::find_by_id(id).one(conn).await?)
+        Ok(user::Entity::find_by_id(id).one(conn).await?)
     }
 
     async fn page_user(
         page_num: i32,
         page_size: i32,
-    ) -> Result<PageResult<Vec<Model>>, anyhow::Error> {
+    ) -> Result<PageResult<Vec<user::Model>>, anyhow::Error> {
         debug!("page_num={}, page_size={}", page_num, page_size);
         let mut page_num = page_num;
         let mut page_size = page_size;
@@ -65,8 +65,8 @@ pub trait UserEntityTrait {
             page_size = 1;
         }
         let conn = unsafe { APP_CONN.unwrap() };
-        let paginator = Entity::find()
-            .order_by_desc(Column::Id)
+        let paginator = user::Entity::find()
+            .order_by_desc(user::Column::Id)
             .paginate(conn, page_size.try_into()?);
         let pages = paginator.num_pages().await?;
         let arr = paginator.fetch_page((page_num - 1).try_into()?).await?;
@@ -79,25 +79,28 @@ pub trait UserEntityTrait {
         })
     }
 
-    async fn list_by_age_and_egin(age: i32, egin: String) -> Result<Vec<UserDTO>, anyhow::Error> {
+    async fn list_by_age_and_egin(
+        age: i32,
+        egin: String,
+    ) -> Result<Vec<user::UserDTO>, anyhow::Error> {
         let conn = unsafe { APP_CONN.unwrap() };
-        let arr = Entity::find()
+        let arr = user::Entity::find()
             .select_only()
-            .column(Column::Id)
-            .column(Column::UserName)
-            .column(Column::Age)
+            .column(user::Column::Id)
+            .column(user::Column::UserName)
+            .column(user::Column::Age)
             .column(car::Column::Egin)
             .column_as(car::Column::Id, "car_id")
-            .join(JoinType::InnerJoin, Relation::Car.def())
+            .join(JoinType::InnerJoin, user::Relation::Car.def())
             .filter(
                 Condition::all()
-                    .add(Column::Age.gt(age))
+                    .add(user::Column::Age.gt(age))
                     .add(car::Column::Egin.eq(egin)),
             )
-            .order_by_desc(Column::Id)
+            .order_by_desc(user::Column::Id)
             .limit(10)
             .offset(1)
-            .into_model::<UserDTO>()
+            .into_model::<user::UserDTO>()
             .all(conn)
             .await?;
         Ok(arr)

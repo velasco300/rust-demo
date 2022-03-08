@@ -1,8 +1,7 @@
 pub mod car_controller;
 pub mod user_controller;
 
-use rust_demo_core::common::AppErr;
-use rust_demo_core::common::RspResult;
+use rust_demo_core::common::{AppErr, RspResult};
 use tracing::info;
 
 pub fn make_result<T>(rs: Result<T, anyhow::Error>) -> RspResult<Option<T>> {

@@ -1,7 +1,7 @@
 pub(crate) mod controller;
 pub mod middleware;
 
-use crate::controller::user_controller;
+use crate::controller::{car_controller, user_controller};
 use axum::{
     handler::Handler,
     http::Request,
@@ -10,7 +10,6 @@ use axum::{
     routing::{get, post},
     Json, Router, Server,
 };
-use controller::car_controller;
 use rust_demo_core::{
     common::RspResult,
     orm,
