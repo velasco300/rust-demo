@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "rust-demo-core", "migration"]
+members = [".", "rust-demo-core", "rust-demo-macros", "migration"]
 
 [package]
 name = "rust-demo"
@@ -8,6 +8,7 @@ edition = "2021"
 
 [dependencies]
 rust-demo-core = { path = "rust-demo-core" }
+rust-demo-macros = { path = "rust-demo-macros" }
 axum = "0.4"
 tokio = { version = "1", features = ["full"] }
 tracing = "0.1"
