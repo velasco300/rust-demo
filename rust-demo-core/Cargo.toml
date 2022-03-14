@@ -8,6 +8,7 @@ name = "rust_demo_core"
 path = "src/lib.rs"
 
 [dependencies]
+rust-demo-macros = { path = "../rust-demo-macros" }
 sea-orm = { version = "^0", features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print" ], default-features = false }
 serde = { version = "1", features = ["derive"] }
 anyhow = "1.0.53"
