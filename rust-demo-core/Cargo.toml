@@ -9,13 +9,13 @@ path = "src/lib.rs"
 
 [dependencies]
 rust-demo-macros = { path = "../rust-demo-macros" }
-sea-orm = { version = "^0", features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print" ], default-features = false }
-serde = { version = "1", features = ["derive"] }
+sea-orm = { version = "0.7.1", features = [ "sqlx-mysql", "runtime-tokio-rustls", "macros", "debug-print" ], default-features = false }
+serde = { version = "1.0.136", features = ["derive"] }
 anyhow = "1.0.53"
 async-trait = "0.1.52"
-axum = "0.4"
-tracing = "0.1"
-tracing-subscriber = { version="0.3", features = ["env-filter"] }
+axum = "0.4.8"
+tracing = "0.1.32"
+tracing-subscriber = { version="0.3.9", features = ["env-filter"] }
 time = "0.3.7"
 time-macros = "0.2.3"
 toml_edit =  { version = "0.13.4", features = ["serde", "easy"] }
